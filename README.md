@@ -1,2 +1,2 @@
 # maven-project
-新项目
+咕泡新项目
