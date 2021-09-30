@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gupao</groupId>
+    <artifactId>maven-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <user.version>1233</user.version>
+    </properties>
+
+    <!--mvn install -P dev 就近原则指定对应的id 这里使id为dev的profile生效-->
+    <profiles>
+        <profile>
+            <!--文件名-->
+            <id>dev</id>
+            <!--属性赋值-->
+            <properties>
+                <profiles.active>dev2</profiles.active>
+            </properties>
+            <!--开启默认当前profile生效-->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <resources>
+            <!--不打包所有resource下的文件-->
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>conf/**</exclude>
+                </excludes>
+            </resource>
+            <!--只打包符合条件的文件夹-->
+            <resource>
+                <directory>${basedir}/src/main/resources/conf/${profiles.active}</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <configuration>
+                    <port>8080</port>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.gupao</groupId>
+                <artifactId>gupao-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>gupaoadu</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--<msg>叼你</msg>-->
+                    <options>
+                        <option>one</option>
+                        <option>two</option>
+                        <option>three</option>
+                    </options>
+                    <!--或者 mvn gupao:gupaoadu -Dmsg=123-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-release</id>
+            <name>release</name>
+            <url>http://localhost:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshot</id>
+            <name>snapshot</name>
+            <url>http://localhost:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>
